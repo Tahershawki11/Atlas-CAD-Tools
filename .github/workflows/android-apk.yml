@@ -62,26 +62,24 @@ jobs:
         env:
           STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           test -n "$STORE_PASSWORD"
           test -n "$KEY_ALIAS"
-          test -n "$KEY_PASSWORD"
 
-      - name: Verify keystore credentials
+      - name: Verify PKCS12 keystore credentials
         env:
           STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          keytool -list -keystore android/release.keystore             -storepass "$STORE_PASSWORD"             -alias "$KEY_ALIAS"             -keypass "$KEY_PASSWORD" >/dev/null
+          keytool -list -keystore android/release.keystore             -storepass "$STORE_PASSWORD"             -alias "$KEY_ALIAS" >/dev/null
 
       - name: Build signed APK
         env:
           ANDROID_KEYSTORE_PATH: ../release.keystore
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          # PKCS12 uses the store password for the private key as well.
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           printf '%s\n' "android.injected.signing.store.file=$PWD/android/$ANDROID_KEYSTORE_PATH" > android/signing.properties
           printf '%s\n' "android.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD" >> android/signing.properties
