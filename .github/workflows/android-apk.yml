@@ -66,6 +66,14 @@ jobs:
           test -n "$KEY_ALIAS"
           test -n "$KEY_PASSWORD"
 
+      - name: Verify keystore credentials
+        env:
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          keytool -list -keystore android/release.keystore             -storepass "$STORE_PASSWORD"             -alias "$KEY_ALIAS"             -keypass "$KEY_PASSWORD" >/dev/null
+
       - name: Build signed APK
         env:
           ANDROID_KEYSTORE_PATH: ../release.keystore
