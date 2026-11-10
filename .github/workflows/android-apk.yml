@@ -1,4 +1,5 @@
 name: Build Android APK
+run-name: Atlas Tools Android Release
 
 on:
   workflow_dispatch:
