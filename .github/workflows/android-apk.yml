@@ -55,6 +55,7 @@ jobs:
           test -n "$KEYSTORE_B64"
           printf '%s' "$KEYSTORE_B64" | base64 --decode > android/release.keystore
           test -s android/release.keystore
+          echo "Keystore SHA-256: $(sha256sum android/release.keystore | cut -d' ' -f1)"
 
       - name: Verify signing secrets
         env:
