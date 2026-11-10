@@ -28,6 +28,11 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
@@ -71,9 +76,7 @@ jobs:
           printf '%s\n' "android.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD" >> android/signing.properties
           printf '%s\n' "android.injected.signing.key.alias=$ANDROID_KEY_ALIAS" >> android/signing.properties
           printf '%s\n' "android.injected.signing.key.password=$ANDROID_KEY_PASSWORD" >> android/signing.properties
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease --stacktrace
+          gradle -p android assembleRelease --stacktrace
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
