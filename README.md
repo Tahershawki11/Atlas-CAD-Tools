@@ -44,20 +44,21 @@ ATLAS_TEST_URL=http://localhost:5181 npm run test:browser
 - `src/lib/storage.ts`: تخزين ذري لبيانات المشاريع والأصول.
 - `src/components`: إدارة الملفات ومساحة الرسم والمختبر.
 
-تفاصيل الاختبار والقيود: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).
+تفاصيل الاختبار والقيود: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).  
 تفاصيل الواجهة والمقارنة البصرية: [docs/DESIGN.md](docs/DESIGN.md).
 
 ## النشر والتحديث على الهاتف
 
-بعد ربط مستودع GitHub، فعّل GitHub Pages من Settings → Pages → GitHub Actions. ستنشر `pages.yml` نسخة المعاينة تلقائيًا مع كل دفع إلى `main`.
+Workflow باسم **Web preview artifact** يبني نسخة الويب ويرفعها كـArtifact مع كل دفع إلى `main`. نشر رابط GitHub Pages يحتاج تفعيل Pages مرة واحدة من Settings → Pages → GitHub Actions، لأن اتصال GitHub الحالي لا يملك صلاحية إنشاء موقع Pages تلقائيًا.
 
-إصدار APK الإنتاجي يتم عبر وسم مثل `v0.1.0`:
+Workflow باسم **Build Android APK** يبني APK موقّعًا مع كل دفع إلى `main` وينشئ Release تلقائيًا برقم مثل `v0.1.16`. كما يدعم Tags بصيغة `v*.*.*`.
 
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
+يحتاج الإصدار أسرارًا ثابتة:
 
-يحتاج سير العمل أسرارًا ثابتة قبل أول إصدار: `ANDROID_KEYSTORE_BASE64` و`ANDROID_KEYSTORE_PASSWORD` و`ANDROID_KEY_ALIAS` و`ANDROID_KEY_PASSWORD`. يجب الاحتفاظ بنفس keystore لكل الإصدارات؛ تغييره يمنع Android من تثبيت التحديث فوق النسخة السابقة.
+- `ANDROID_KEYSTORE_BASE64`: محتوى keystore بصيغة Base64.
+- `ANDROID_KEYSTORE_PASSWORD`: كلمة مرور keystore.
+- `ANDROID_KEY_ALIAS`: `atlas`.
+
+الـkeystore المستخدم بصيغة PKCS12، لذلك يستخدم Android كلمة مرور keystore نفسها للمفتاح الخاص. يجب الاحتفاظ بنفس keystore لكل الإصدارات؛ تغييره يمنع Android من تثبيت التحديث فوق النسخة السابقة. السر القديم `ANDROID_KEY_PASSWORD` يمكن تركه موجودًا، لكنه غير مستخدم في Workflow الحالي.
 
 صفحة دليل الاستخدام داخل التطبيق تفحص `releases/latest` في المستودع وتعرض APK الأحدث. لأسباب أمن Android، التنزيل يمر عبر مثبت النظام ويحتاج موافقة المستخدم على تثبيت التطبيقات من المصدر؛ لا يمكن لتطبيق عادي تنفيذ تثبيت صامت دون إدارة جهاز أو صلاحيات نظام.
